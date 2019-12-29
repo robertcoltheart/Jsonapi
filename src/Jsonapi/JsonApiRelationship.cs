@@ -1,7 +1,20 @@
-﻿namespace Jsonapi
+﻿using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using Jsonapi.Converters;
+
+namespace Jsonapi
 {
-    public class JsonApiRelationship<T>
+    [JsonConverter(typeof(JsonApiRelationshipConverter))]
+    public class JsonApiRelationship
     {
-        public T Data { get; set; }
+        [JsonPropertyName("links")]
+        public JsonApiRelationshipLinks Links { get; set; }
+
+        [JsonPropertyName("data")]
+        public JsonApiResourceIdentifier[] Data { get; set; }
+
+        [JsonPropertyName("meta")]
+        public Dictionary<string, JsonElement> Meta { get; set; }
     }
 }
