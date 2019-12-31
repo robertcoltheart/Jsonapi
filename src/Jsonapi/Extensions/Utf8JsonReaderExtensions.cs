@@ -2,7 +2,7 @@
 
 namespace Jsonapi.Extensions
 {
-    public static class Utf8JsonReaderExtensions
+    internal static class Utf8JsonReaderExtensions
     {
         public static bool TryReadMember(this ref Utf8JsonReader reader, out string name)
         {

@@ -1,23 +1,19 @@
 ﻿using System;
 using System.Reflection;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Jsonapi.Extensions;
 
 namespace Jsonapi.Serialization
 {
-    public abstract class JsonPropertyInfo
+    internal abstract class JsonPropertyInfo<T>
     {
-        protected JsonPropertyInfo(PropertyInfo property, JsonConverter baseConverter, JsonSerializerOptions options)
+        protected JsonPropertyInfo(PropertyInfo property, JsonSerializerOptions options)
         {
             Name = property.Name;
             PublicName = property.Name.ToCamelCase();
             PropertyType = property.PropertyType;
-            BaseConverter = baseConverter;
             Options = options;
         }
-
-        protected JsonConverter BaseConverter { get; }
 
         public string Name { get; }
 
@@ -35,6 +31,6 @@ namespace Jsonapi.Serialization
 
         public abstract void SetValueAsObject(object resource, object value);
 
-        public abstract void Read(object resource, ref Utf8JsonReader reader);
+        public abstract void Read(T resource, ref Utf8JsonReader reader);
     }
 }

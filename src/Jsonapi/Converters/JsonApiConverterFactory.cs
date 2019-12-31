@@ -16,7 +16,7 @@ namespace Jsonapi.Converters
         {
             var converterType = typeof(JsonApiDocumentConverter<>).MakeGenericType(typeToConvert);
 
-            return Activator.CreateInstance(converterType) as JsonConverter;
+            return Activator.CreateInstance(converterType, options) as JsonConverter;
         }
     }
 }

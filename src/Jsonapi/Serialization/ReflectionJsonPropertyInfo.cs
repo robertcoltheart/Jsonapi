@@ -5,17 +5,18 @@ using System.Text.Json.Serialization;
 
 namespace Jsonapi.Serialization
 {
-    public class ReflectionJsonPropertyInfo<TClass, TProperty> : JsonPropertyInfo
-        where TClass : class
+    internal class ReflectionJsonPropertyInfo<TClass, TProperty> : JsonPropertyInfo<TClass>
     {
-        public ReflectionJsonPropertyInfo(PropertyInfo property, JsonConverter baseConverter, JsonSerializerOptions options)
-            : base(property, baseConverter, options)
+        public ReflectionJsonPropertyInfo(PropertyInfo property, JsonConverter converter, JsonSerializerOptions options)
+            : base(property, options)
         {
             Get = CreateGetter(property);
             Set = CreateSetter(property);
 
             HasGetter = Get != null;
             HasSetter = Set != null;
+
+            Converter = converter as JsonConverter<TProperty>;
         }
 
         public Func<object, TProperty> Get { get; }
@@ -26,7 +27,7 @@ namespace Jsonapi.Serialization
 
         public override bool HasSetter { get; }
 
-        public JsonConverter<TProperty> Converter => BaseConverter as JsonConverter<TProperty>;
+        public JsonConverter<TProperty> Converter { get; }
 
         public override object GetValueAsObject(object resource)
         {
@@ -43,7 +44,7 @@ namespace Jsonapi.Serialization
             }
         }
 
-        public override void Read(object resource, ref Utf8JsonReader reader)
+        public override void Read(TClass resource, ref Utf8JsonReader reader)
         {
             var value = Converter.Read(ref reader, PropertyType, Options);
 

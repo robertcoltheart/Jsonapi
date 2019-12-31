@@ -1,6 +1,6 @@
 ﻿namespace Jsonapi
 {
-    public static class JsonApiMembers
+    internal static class JsonApiMembers
     {
         public const string Document = "document";
 

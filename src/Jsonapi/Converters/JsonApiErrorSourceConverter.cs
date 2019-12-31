@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Jsonapi.Converters
 {
-    public class JsonApiErrorSourceConverter : JsonConverter<JsonApiErrorSource>
+    internal class JsonApiErrorSourceConverter : JsonConverter<JsonApiErrorSource>
     {
         public override JsonApiErrorSource Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {

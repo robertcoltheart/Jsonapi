@@ -8,11 +8,20 @@ using Jsonapi.Serialization;
 
 namespace Jsonapi.Converters
 {
-    public class JsonApiDocumentConverter<T> : JsonConverter<T>
+    internal class JsonApiDocumentConverter<T> : JsonConverter<T>
     {
+        private readonly Lazy<JsonClassInfo<T>> classInfo;
+
+        public JsonApiDocumentConverter(JsonSerializerOptions options)
+        {
+            classInfo = new Lazy<JsonClassInfo<T>>(() => new JsonClassInfo<T>(options));
+        }
+
+        public JsonClassInfo<T> ClassInfo => classInfo.Value;
+
         public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            var resource = Activator.CreateInstance<T>();
+            var resource = ClassInfo.Creator();
 
             if (reader.TokenType != JsonTokenType.StartObject)
             {
@@ -64,10 +73,9 @@ namespace Jsonapi.Converters
 
         public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
         {
-            throw new NotImplementedException();
         }
 
-        private bool PopulateResource(object resource, string member, ref Utf8JsonReader reader, JsonSerializerOptions options)
+        private bool PopulateResource(T resource, string member, ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
             var property = GetProperty(member, options);
 
@@ -81,7 +89,7 @@ namespace Jsonapi.Converters
             return true;
         }
 
-        private JsonPropertyInfo GetProperty(string name, JsonSerializerOptions options)
+        private JsonPropertyInfo<T> GetProperty(string name, JsonSerializerOptions options)
         {
             var property = typeof(T)
                 .GetProperties(BindingFlags.Instance | BindingFlags.Public)
@@ -93,7 +101,7 @@ namespace Jsonapi.Converters
                 var converter = options.GetConverter(property.PropertyType);
                 var reflectionProperty = Activator.CreateInstance(propertyType, property, converter, options);
 
-                return reflectionProperty as JsonPropertyInfo;
+                return reflectionProperty as JsonPropertyInfo<T>;
             }
 
             return null;

@@ -3,7 +3,7 @@
 namespace Jsonapi
 {
     [Flags]
-    public enum ResourceFlags
+    internal enum ResourceFlags
     {
         None,
         Id,

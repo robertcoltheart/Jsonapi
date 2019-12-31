@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Jsonapi.Converters
 {
-    public class JsonApiLinkConverter : JsonConverter<JsonApiLink>
+    internal class JsonApiLinkConverter : JsonConverter<JsonApiLink>
     {
         public override JsonApiLink Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {

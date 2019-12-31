@@ -3,7 +3,7 @@
 namespace Jsonapi
 {
     [Flags]
-    public enum RelationshipFlags
+    internal enum RelationshipFlags
     {
         None,
         Links,
