@@ -5,11 +5,11 @@ using Jsonapi.Extensions;
 
 namespace Jsonapi.Converters
 {
-    internal class JsonApiResourceConverter<T> : JsonConverter<T>
+    internal class JsonApiResourceConverter : JsonConverter<object>
     {
-        public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override object Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            var value = Activator.CreateInstance<T>();
+            var value = Activator.CreateInstance(typeToConvert);
 
             while (reader.TryReadMember(out var member))
             {
@@ -22,7 +22,7 @@ namespace Jsonapi.Converters
             return value;
         }
 
-        public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, object value, JsonSerializerOptions options)
         {
             throw new NotImplementedException();
         }
