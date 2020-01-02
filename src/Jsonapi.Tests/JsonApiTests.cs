@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using Jsonapi.Converters;
+using Jsonapi.Extensions;
 using Xunit;
 
 namespace Jsonapi.Tests
@@ -18,11 +19,9 @@ namespace Jsonapi.Tests
   }
 }";
 
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-                Converters = {new JsonApiConverterFactory()}
-            };
+            var options = new JsonSerializerOptions();
+            options.AddJsonApi();
+            options.PropertyNameCaseInsensitive = true;
 
             var item = JsonSerializer.Deserialize<Article>(json, options);
         }
@@ -72,10 +71,9 @@ namespace Jsonapi.Tests
     }
   ]
 }";
-            var options = new JsonSerializerOptions
-            {
-                Converters = {new JsonApiConverterFactory()}
-            };
+            var options = new JsonSerializerOptions();
+            options.AddJsonApi();
+            options.PropertyNameCaseInsensitive = true;
 
             var article = JsonSerializer.Deserialize<Article>(json, options);
         }

@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using Jsonapi.Converters;
+using Jsonapi.Extensions;
 using Jsonapi.Tests.Models;
 using Xunit;
 
@@ -21,11 +22,9 @@ namespace Jsonapi.Tests
   }
 }";
 
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-                Converters = {new JsonApiConverterFactory()}
-            };
+            var options = new JsonSerializerOptions();
+            options.AddJsonApi();
+            options.PropertyNameCaseInsensitive = true;
 
             var article = JsonSerializer.Deserialize<Article>(json, options);
         }

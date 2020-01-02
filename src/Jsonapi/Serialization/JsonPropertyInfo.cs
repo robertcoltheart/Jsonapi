@@ -5,7 +5,7 @@ using Jsonapi.Extensions;
 
 namespace Jsonapi.Serialization
 {
-    internal abstract class JsonPropertyInfo<T>
+    internal abstract class JsonPropertyInfo
     {
         protected JsonPropertyInfo(PropertyInfo property, JsonSerializerOptions options)
         {
@@ -31,6 +31,6 @@ namespace Jsonapi.Serialization
 
         public abstract void SetValueAsObject(object resource, object value);
 
-        public abstract void Read(T resource, ref Utf8JsonReader reader);
+        public abstract void Read(object resource, ref Utf8JsonReader reader);
     }
 }

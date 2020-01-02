@@ -7,28 +7,28 @@ using System.Text.Json.Serialization;
 
 namespace Jsonapi.Serialization
 {
-    internal class JsonClassInfo<T>
+    internal class JsonClassInfo
     {
-        public JsonClassInfo(JsonSerializerOptions options)
+        public JsonClassInfo(Type type, JsonSerializerOptions options)
         {
             Options = options;
-            Creator = Activator.CreateInstance<T>;
-            Properties = GetProperties();
+            Creator = () => Activator.CreateInstance(type);
+            Properties = GetProperties(type);
         }
 
         public JsonSerializerOptions Options { get; }
 
-        public Func<T> Creator { get; }
+        public Func<object> Creator { get; }
 
-        public Dictionary<string, JsonPropertyInfo<T>> Properties { get; }
+        public Dictionary<string, JsonPropertyInfo> Properties { get; }
 
-        private Dictionary<string, JsonPropertyInfo<T>> GetProperties()
+        private Dictionary<string, JsonPropertyInfo> GetProperties(Type type)
         {
             var comparer = Options.PropertyNameCaseInsensitive
                 ? StringComparer.OrdinalIgnoreCase
                 : StringComparer.Ordinal;
 
-            return typeof(T)
+            return type
                 .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                 .Where(x => !x.GetIndexParameters().Any())
                 .Where(x => x.GetMethod?.IsPublic == true || x.SetMethod?.IsPublic == true)
@@ -53,12 +53,12 @@ namespace Jsonapi.Serialization
             return property.Name;
         }
 
-        private JsonPropertyInfo<T> CreateProperty(PropertyInfo property)
+        private JsonPropertyInfo CreateProperty(PropertyInfo property)
         {
-            var propertyType = typeof(ReflectionJsonPropertyInfo<,>).MakeGenericType(typeof(T), property.PropertyType);
+            var propertyType = typeof(ReflectionJsonPropertyInfo<,>).MakeGenericType(property.DeclaringType, property.PropertyType);
             var converter = Options.GetConverter(property.PropertyType);
 
-            return Activator.CreateInstance(propertyType, property, converter, Options) as JsonPropertyInfo<T>;
+            return Activator.CreateInstance(propertyType, property, converter, Options) as JsonPropertyInfo;
         }
     }
 }

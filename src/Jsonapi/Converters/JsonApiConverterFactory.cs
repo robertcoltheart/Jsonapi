@@ -5,7 +5,7 @@ using Jsonapi.Extensions;
 
 namespace Jsonapi.Converters
 {
-    public class JsonApiConverterFactory : JsonConverterFactory
+    internal class JsonApiConverterFactory : JsonConverterFactory
     {
         public override bool CanConvert(Type typeToConvert)
         {

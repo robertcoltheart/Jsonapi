@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace Jsonapi.Serialization
 {
-    internal class ReflectionJsonPropertyInfo<TClass, TProperty> : JsonPropertyInfo<TClass>
+    internal class ReflectionJsonPropertyInfo<TClass, TProperty> : JsonPropertyInfo
     {
         public ReflectionJsonPropertyInfo(PropertyInfo property, JsonConverter converter, JsonSerializerOptions options)
             : base(property, options)
@@ -44,7 +44,7 @@ namespace Jsonapi.Serialization
             }
         }
 
-        public override void Read(TClass resource, ref Utf8JsonReader reader)
+        public override void Read(object resource, ref Utf8JsonReader reader)
         {
             var value = Converter.Read(ref reader, PropertyType, Options);
 
