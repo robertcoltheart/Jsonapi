@@ -8,8 +8,4 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\JsonApi.Json\JsonApi.Json.csproj" />
-  </ItemGroup>
-
 </Project>

@@ -1,12 +1,11 @@
 ﻿using System.Text.Json;
 using JsonApi;
-using JsonApi.Converters;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
 namespace JsonApiWeb
 {
-    public class Article : IResource
+    public class Article //: IResource
     {
         public string Id { get; set; }
 
@@ -32,7 +31,7 @@ namespace JsonApiWeb
 
             var options = new JsonSerializerOptions
             {
-                Converters = {new JsonApiConverterFactory()}
+                //Converters = {new JsonApiConverterFactory()}
             };
 
             //var article = JsonSerializer.Deserialize<Article>(json, options);

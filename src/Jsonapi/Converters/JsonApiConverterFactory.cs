@@ -5,6 +5,11 @@ using Jsonapi.Extensions;
 
 namespace Jsonapi.Converters
 {
+    /// <summary>
+    /// - Document converter for JsonApiDocument<T>
+    /// - Resource converter parses top level document, then the resource
+    /// - 
+    /// </summary>
     internal class JsonApiConverterFactory : JsonConverterFactory
     {
         public override bool CanConvert(Type typeToConvert)
