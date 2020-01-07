@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using Jsonapi.Extensions;
 using Jsonapi.Tests.Models;
 using Xunit;
 

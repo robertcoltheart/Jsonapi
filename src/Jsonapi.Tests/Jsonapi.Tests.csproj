@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\JsonApi\JsonApi.csproj" />
+    <ProjectReference Include="..\JsonApi.Again\JsonApi.Again.csproj" />
   </ItemGroup>
 
 </Project>
