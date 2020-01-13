@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Jsonapi
+namespace JsonApi
 {
     [Flags]
     internal enum ResourceFlags

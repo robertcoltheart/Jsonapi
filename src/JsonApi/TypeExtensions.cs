@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reflection;
 
-namespace Jsonapi.Extensions
+namespace JsonApi
 {
     internal static class TypeExtensions
     {
@@ -12,6 +12,11 @@ namespace Jsonapi.Extensions
 
             return properties.Any(x => x.Name.Equals("Id", StringComparison.InvariantCultureIgnoreCase) ||
                                        x.Name.Equals("Type", StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        public static bool IsDocument(this Type type)
+        {
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(JsonApiDocument<>);
         }
     }
 }

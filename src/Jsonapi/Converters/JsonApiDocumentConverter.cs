@@ -1,20 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Jsonapi.Converters
+namespace JsonApi.Converters
 {
     internal class JsonApiDocumentConverter<T> : JsonConverter<T>
     {
-        private readonly JsonApiResourceConverter resourceConverter = new JsonApiResourceConverter();
-
         public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (reader.TokenType != JsonTokenType.StartObject)
             {
                 throw new JsonApiException("Invalid JSON:API document");
             }
+
+            var dataType = typeToConvert.GetGenericArguments()[0];
+
+            var root = Activator.CreateInstance(typeof(JsonApiDocument<>).MakeGenericType(dataType));
 
             reader.Read();
 
@@ -29,19 +32,29 @@ namespace Jsonapi.Converters
 
                 reader.Read();
 
-                ReadDocumentMember(ref reader, property, typeToConvert, options);
+                if (property == JsonApiMembers.Data)
+                {
+                    var data = JsonSerializer.Deserialize(ref reader, dataType, options);
+
+                    var dataProperty = root.GetType().GetProperty("Data", BindingFlags.Instance | BindingFlags.Public);
+                    dataProperty?.SetValue(root, data);
+                }
+                else
+                {
+                    ReadDocumentMember(ref reader, property, typeToConvert, options);
+                }
 
                 reader.Read();
             }
 
-            return default;
+            return (T) root;
         }
 
         private void ReadDocumentMember(ref Utf8JsonReader reader, string property, Type typeToConvert, JsonSerializerOptions options)
         {
             if (property == JsonApiMembers.Data)
             {
-                resourceConverter.Read(ref reader, typeToConvert, options);
+                //resourceConverter.Read(ref reader, typeToConvert, options);
             }
             else if (property == JsonApiMembers.Errors)
             {

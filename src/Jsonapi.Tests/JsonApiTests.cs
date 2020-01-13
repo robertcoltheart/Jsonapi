@@ -1,5 +1,5 @@
 ﻿using System.Text.Json;
-using Jsonapi.Converters;
+using JsonApi;
 using Xunit;
 
 namespace Jsonapi.Tests

@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Jsonapi.Serialization
+namespace JsonApi.Serialization
 {
     internal class ReflectionJsonPropertyInfo<TClass, TProperty> : JsonPropertyInfo
     {
@@ -49,8 +49,6 @@ namespace Jsonapi.Serialization
             var value = Converter.Read(ref reader, PropertyType, Options);
 
             Set(resource, value);
-
-            reader.Read();
         }
 
         private Func<object, TProperty> CreateGetter(PropertyInfo propertyInfo)

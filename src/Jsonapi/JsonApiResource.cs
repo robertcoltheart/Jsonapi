@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Jsonapi
+namespace JsonApi
 {
     public class JsonApiResource<T> : JsonApiResourceIdentifier
     {
@@ -16,7 +16,6 @@ namespace Jsonapi
         public Dictionary<string, JsonApiLink> Links { get; set; }
     }
 
-    //[JsonConverter(typeof(JsonApiResourceConverter))]
     public class JsonApiResource : JsonApiResourceIdentifier
     {
         [JsonPropertyName("attributes")]

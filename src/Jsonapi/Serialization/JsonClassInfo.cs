@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Jsonapi.Serialization
+namespace JsonApi.Serialization
 {
     internal class JsonClassInfo
     {

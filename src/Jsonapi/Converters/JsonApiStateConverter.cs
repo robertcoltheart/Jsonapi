@@ -2,9 +2,9 @@
 using System.Collections.Concurrent;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Jsonapi.Serialization;
+using JsonApi.Serialization;
 
-namespace Jsonapi.Converters
+namespace JsonApi.Converters
 {
     internal class JsonApiStateConverter : JsonConverter<JsonApiStateConverter>
     {

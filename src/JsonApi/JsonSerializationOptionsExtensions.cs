@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Text.Json;
-using Jsonapi.Converters;
-using Jsonapi.Serialization;
+using JsonApi.Converters;
+using JsonApi.Serialization;
 
-namespace Jsonapi
+namespace JsonApi
 {
     public static class JsonSerializationOptionsExtensions
     {

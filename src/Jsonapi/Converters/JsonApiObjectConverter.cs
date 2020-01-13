@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Jsonapi.Converters
+namespace JsonApi.Converters
 {
     internal class JsonApiObjectConverter : JsonConverter<JsonApiObject>
     {

@@ -1,11 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Jsonapi.Converters;
 
-namespace Jsonapi
+namespace JsonApi
 {
-    //[JsonConverter(typeof(JsonApiDocumentConverter))]
+    public class JsonApiDocument<T>
+    {
+        public T Data { get; set; }
+
+        internal void SetData(object value)
+        {
+            Data = (T) value;
+        }
+    }
+
     public class JsonApiDocument
     {
         [JsonPropertyName("data")]

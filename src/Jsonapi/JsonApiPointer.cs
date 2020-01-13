@@ -1,4 +1,4 @@
-﻿namespace Jsonapi
+﻿namespace JsonApi
 {
     public class JsonApiPointer
     {

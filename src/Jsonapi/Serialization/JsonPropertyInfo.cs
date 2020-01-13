@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Reflection;
 using System.Text.Json;
-using Jsonapi.Extensions;
 
-namespace Jsonapi.Serialization
+namespace JsonApi.Serialization
 {
     internal abstract class JsonPropertyInfo
     {

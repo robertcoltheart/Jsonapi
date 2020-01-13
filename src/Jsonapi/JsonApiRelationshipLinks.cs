@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Jsonapi
+namespace JsonApi
 {
     public class JsonApiRelationshipLinks
     {

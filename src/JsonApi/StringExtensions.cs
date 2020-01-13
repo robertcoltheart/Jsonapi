@@ -1,4 +1,4 @@
-﻿namespace Jsonapi
+﻿namespace JsonApi
 {
     internal static class StringExtensions
     {
