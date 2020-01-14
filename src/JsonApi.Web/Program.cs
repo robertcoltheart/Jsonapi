@@ -36,8 +36,6 @@ namespace JsonApiWeb
 
             //var article = JsonSerializer.Deserialize<Article>(json, options);
 
-            int r = 1;
-
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(x =>
                 {

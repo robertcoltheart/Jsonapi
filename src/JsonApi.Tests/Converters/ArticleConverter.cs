@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Jsonapi.Tests.Models;
+using JsonApi.Tests.Models;
 
-namespace Jsonapi.Tests.Converters
+namespace JsonApi.Tests.Converters
 {
-    public class JsonApiTestConverter : JsonConverter<Article>
+    public class ArticleConverter : JsonConverter<Article>
     {
         public override Article Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {

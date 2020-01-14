@@ -1,4 +1,4 @@
-﻿namespace Jsonapi.Tests.Models
+﻿namespace JsonApi.Tests.Models
 {
     public class Article
     {
