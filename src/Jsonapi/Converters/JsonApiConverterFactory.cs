@@ -8,6 +8,16 @@ namespace JsonApi.Converters
     {
         public override bool CanConvert(Type typeToConvert)
         {
+            if (typeToConvert.IsError())
+            {
+                return false;
+            }
+
+            if (typeToConvert.IsCollection() && typeToConvert.GetCollectionType() == typeof(JsonApiError))
+            {
+                return true;
+            }
+
             if (typeToConvert.IsDocument())
             {
                 return true;
@@ -18,6 +28,16 @@ namespace JsonApi.Converters
 
         public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
         {
+            //if (typeToConvert.IsError())
+            //{
+            //    return new JsonApiErrorConverter();
+            //}
+
+            if (typeToConvert.IsCollection() && typeToConvert.GetCollectionType() == typeof(JsonApiError))
+            {
+                return CreateConverter(typeof(JsonApiErrorsConverter<>), typeToConvert);
+            }
+
             if (typeToConvert.IsDocument())
             {
                 return CreateConverter(typeof(JsonApiDocumentConverter<>), typeToConvert);

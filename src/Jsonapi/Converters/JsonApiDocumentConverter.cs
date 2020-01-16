@@ -39,6 +39,13 @@ namespace JsonApi.Converters
                     var dataProperty = root.GetType().GetProperty("Data", BindingFlags.Instance | BindingFlags.Public);
                     dataProperty?.SetValue(root, data);
                 }
+                else if (property == JsonApiMembers.Errors)
+                {
+                    var errors = JsonSerializer.Deserialize<JsonApiError[]>(ref reader, options);
+
+                    var errorsProperty = root.GetType().GetProperty("Errors", BindingFlags.Instance | BindingFlags.Public);
+                    errorsProperty?.SetValue(root, errors);
+                }
                 else
                 {
                     ReadDocumentMember(ref reader, property, typeToConvert, options);

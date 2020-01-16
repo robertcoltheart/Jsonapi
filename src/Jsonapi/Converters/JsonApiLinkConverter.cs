@@ -8,7 +8,14 @@ namespace JsonApi.Converters
     {
         public override JsonApiLink Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            throw new NotImplementedException();
+            var link = new JsonApiLink();
+
+            if (reader.TokenType == JsonTokenType.String)
+            {
+                link.Href = reader.GetString();
+            }
+
+            return link;
         }
 
         public override void Write(Utf8JsonWriter writer, JsonApiLink value, JsonSerializerOptions options)

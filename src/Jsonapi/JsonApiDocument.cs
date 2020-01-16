@@ -6,12 +6,11 @@ namespace JsonApi
 {
     public class JsonApiDocument<T>
     {
+        [JsonPropertyName("data")]
         public T Data { get; set; }
 
-        internal void SetData(object value)
-        {
-            Data = (T) value;
-        }
+        [JsonPropertyName("errors")]
+        public JsonApiError[] Errors { get; set; }
     }
 
     public class JsonApiDocument
