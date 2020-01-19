@@ -19,7 +19,7 @@ namespace JsonApi
         public JsonApiResource[] Data { get; set; }
 
         [JsonPropertyName("errors")]
-        public JsonApiError Errors { get; set; }
+        public JsonApiError[] Errors { get; set; }
 
         [JsonPropertyName("meta")]
         public Dictionary<string, JsonElement> Meta { get; set; }

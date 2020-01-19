@@ -34,6 +34,24 @@ namespace JsonApi.Tests.Deserialization
         }
 
         [Fact]
+        public void CanConvertSingleError()
+        {
+            const string json = @"
+                {
+                  'errors': [
+                    {
+                      'status': '422',
+                      'source': { 'pointer': '/data/attributes/firstName' },
+                      'title':  'Invalid Attribute',
+                      'detail': 'First name must contain at least three characters.'
+                    }
+                  ]
+                }";
+
+            var error = Deserialize<JsonApiError>(json.ToDoubleQuoted());
+        }
+
+        [Fact]
         public void OtherTest()
         {
             const string json = @"

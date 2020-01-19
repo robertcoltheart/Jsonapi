@@ -8,7 +8,12 @@ namespace JsonApi.Converters
     {
         public override JsonApiError Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            throw new NotImplementedException();
+            if (reader.IsDocument())
+            {
+                var document = JsonSerializer.Deserialize<JsonApiDocument>(ref reader, options);
+
+                return document.Data;
+            }
         }
 
         public override void Write(Utf8JsonWriter writer, JsonApiError value, JsonSerializerOptions options)

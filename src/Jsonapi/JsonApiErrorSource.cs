@@ -2,7 +2,7 @@
 
 namespace JsonApi
 {
-    public class JsonApiErrorSource
+    public sealed class JsonApiErrorSource
     {
         [JsonPropertyName("pointer")]
         public JsonApiPointer Pointer { get; set; }
