@@ -6,6 +6,23 @@ using System.Text.Json.Serialization;
 
 namespace JsonApi.Converters
 {
+    internal class JsonApiDocumentConverter : JsonConverter<JsonApiDocument>
+    {
+        public override JsonApiDocument Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            if (reader.TokenType != JsonTokenType.StartObject)
+            {
+                throw new JsonApiException("Invalid JSON:API document");
+            }
+
+            return null;
+        }
+
+        public override void Write(Utf8JsonWriter writer, JsonApiDocument value, JsonSerializerOptions options)
+        {
+        }
+    }
+
     internal class JsonApiDocumentConverter<T> : JsonConverter<T>
     {
         public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

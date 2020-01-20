@@ -16,7 +16,7 @@ namespace JsonApi.Converters
                 return document.Errors.FirstOrDefault();
             }
 
-            return reader.ReadObject(typeToConvert, options) as JsonApiError;
+            return reader.ReadObject<JsonApiError>(options);
         }
 
         public override void Write(Utf8JsonWriter writer, JsonApiError value, JsonSerializerOptions options)

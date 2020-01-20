@@ -1,7 +1,4 @@
 ﻿using System.Linq;
-using JsonApiSerializer;
-using JsonApiSerializer.JsonApi;
-using Newtonsoft.Json;
 using Xunit;
 
 namespace JsonApi.Tests.Deserialization
@@ -56,32 +53,6 @@ namespace JsonApi.Tests.Deserialization
             Assert.Equal("First name must contain at least three characters.", error.Detail);
             Assert.NotNull(error.Source);
             Assert.Equal("/data/attributes/firstName", error.Source.Pointer.ToString());
-        }
-
-        [Fact]
-        public void OtherTest()
-        {
-            const string json = @"
-                {
-                  'errors': [
-                    {
-                      'status': '404',
-                      'source': { 'pointer': '/data/attributes/asd' },
-                      'title':  'rob',
-                      'detail': 'this is'
-                    },
-                    {
-                      'status': '422',
-                      'source': { 'pointer': '/data/attributes/firstName' },
-                      'title':  'Invalid Attribute',
-                      'detail': 'First name must contain at least three characters.'
-                    }
-                  ]
-                }";
-
-            var settings = new JsonApiSerializerSettings();
-
-            var error = JsonConvert.DeserializeObject<Error>(json, settings);
         }
     }
 }
