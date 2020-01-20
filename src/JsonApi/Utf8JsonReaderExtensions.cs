@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System;
+using System.Text.Json;
 
 namespace JsonApi
 {
@@ -50,6 +51,50 @@ namespace JsonApi
             }
 
             return false;
+        }
+
+        public static T ReadObject<T>(this ref Utf8JsonReader reader, JsonSerializerOptions options)
+        {
+            return (T) ReadObject(ref reader, typeof(T), options);
+        }
+
+        public static object ReadObject(this ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            if (reader.TokenType != JsonTokenType.StartObject)
+            {
+                throw new JsonApiException("Invalid JSON:API resource");
+            }
+
+            var info = options.GetClassInfo(typeToConvert);
+
+            var resource = info.Creator();
+
+            reader.Read();
+
+            while (reader.TokenType != JsonTokenType.EndObject)
+            {
+                if (reader.TokenType != JsonTokenType.PropertyName)
+                {
+                    throw new JsonApiException($"Expected top-level JSON:API property name but found '{reader.GetString()}'");
+                }
+
+                var name = reader.GetString();
+
+                reader.Read();
+
+                if (info.Properties.TryGetValue(name, out var property))
+                {
+                    property.Read(resource, ref reader);
+                }
+                else
+                {
+                    reader.Skip();
+                }
+
+                reader.Read();
+            }
+
+            return resource;
         }
 
         public static bool TryReadMember(this ref Utf8JsonReader reader, out string name)

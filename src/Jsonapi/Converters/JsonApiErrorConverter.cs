@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -12,8 +13,10 @@ namespace JsonApi.Converters
             {
                 var document = JsonSerializer.Deserialize<JsonApiDocument>(ref reader, options);
 
-                return document.Data;
+                return document.Errors.FirstOrDefault();
             }
+
+            return reader.ReadObject(typeToConvert, options) as JsonApiError;
         }
 
         public override void Write(Utf8JsonWriter writer, JsonApiError value, JsonSerializerOptions options)

@@ -49,6 +49,13 @@ namespace JsonApi.Tests.Deserialization
                 }";
 
             var error = Deserialize<JsonApiError>(json.ToDoubleQuoted());
+
+            Assert.NotNull(error);
+            Assert.Equal("422", error.Status);
+            Assert.Equal("Invalid Attribute", error.Title);
+            Assert.Equal("First name must contain at least three characters.", error.Detail);
+            Assert.NotNull(error.Source);
+            Assert.Equal("/data/attributes/firstName", error.Source.Pointer.ToString());
         }
 
         [Fact]

@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using JsonApi.Converters;
 
 namespace JsonApi
 {
-    //[JsonConverter(typeof(JsonApiErrorConverter))]
+    [JsonConverter(typeof(JsonApiErrorConverter))]
     public sealed class JsonApiError
     {
         [JsonPropertyName("id")]
