@@ -41,22 +41,24 @@ namespace JsonApi.Converters
 
         public override void Write(Utf8JsonWriter writer, JsonApiObject value, JsonSerializerOptions options)
         {
-            throw new NotImplementedException();
-        }
-
-        private JsonApiVersion GetVersion(string value)
-        {
-            if (value == "1.0")
+            if (value.Version != null)
             {
-                return JsonApiVersion.Version1_0;
+                writer.WriteString("version", value.Version.ToString());
             }
 
-            if (value == "1.1")
+            if (value.Meta != null)
             {
-                return JsonApiVersion.Version1_1;
-            }
+                writer.WritePropertyName("meta");
+                writer.WriteStartObject();
 
-            throw new JsonApiException($"Invalid JSON:API version: '{value}'");
+                foreach (var meta in value.Meta)
+                {
+                    writer.WritePropertyName(meta.Key);
+                    meta.Value.WriteTo(writer);
+                }
+
+                writer.WriteEndObject();
+            }
         }
     }
 }

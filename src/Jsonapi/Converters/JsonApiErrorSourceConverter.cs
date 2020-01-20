@@ -18,7 +18,15 @@ namespace JsonApi.Converters
 
         public override void Write(Utf8JsonWriter writer, JsonApiErrorSource value, JsonSerializerOptions options)
         {
-            throw new NotImplementedException();
+            if (value.Pointer != null)
+            {
+                writer.WriteString("pointer", value.Pointer.ToString() ?? string.Empty);
+            }
+
+            if (!string.IsNullOrEmpty(value.Parameter))
+            {
+                writer.WriteString("parameter", value.Parameter);
+            }
         }
     }
 }

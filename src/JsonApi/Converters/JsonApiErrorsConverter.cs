@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -39,7 +40,16 @@ namespace JsonApi.Converters
 
         public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
         {
-            throw new NotImplementedException();
+            var errors = value as IEnumerable<JsonApiError> ?? Enumerable.Empty<JsonApiError>();
+
+            writer.WriteStartArray();
+
+            foreach (var error in errors)
+            {
+                JsonSerializer.Serialize(writer, error, options);
+            }
+
+            writer.WriteEndArray();
         }
     }
 }

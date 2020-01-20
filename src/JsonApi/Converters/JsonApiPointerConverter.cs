@@ -4,23 +4,23 @@ using System.Text.Json.Serialization;
 
 namespace JsonApi.Converters
 {
-    public class JsonApiPointerConverter : JsonConverter<JsonApiPointer>
+    internal class JsonApiPointerConverter : JsonConverter<JsonApiPointer>
     {
         public override JsonApiPointer Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            var value = reader.GetString();
+
             if (reader.TokenType != JsonTokenType.String)
             {
-                throw new JsonApiException("Invalid JSON pointer [RFC6901]");
+                throw new JsonApiException($"Invalid JSON pointer [RFC6901] value: '{value}'");
             }
-
-            var value = reader.GetString();
 
             return new JsonApiPointer(value);
         }
 
         public override void Write(Utf8JsonWriter writer, JsonApiPointer value, JsonSerializerOptions options)
         {
-            throw new NotImplementedException();
+            writer.WriteStringValue(value.ToString());
         }
     }
 }

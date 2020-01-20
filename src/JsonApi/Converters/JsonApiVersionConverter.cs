@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace JsonApi.Converters
 {
-    public class JsonApiVersionConverter : JsonConverter<Version>
+    internal class JsonApiVersionConverter : JsonConverter<Version>
     {
         private static readonly Version MinimumVersion = Version.Parse("1.0");
 
@@ -27,7 +27,7 @@ namespace JsonApi.Converters
 
         public override void Write(Utf8JsonWriter writer, Version value, JsonSerializerOptions options)
         {
-            throw new NotImplementedException();
+            writer.WriteStringValue(value.ToString());
         }
     }
 }
