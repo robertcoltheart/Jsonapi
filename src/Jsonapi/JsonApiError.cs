@@ -1,18 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using JsonApi.Converters;
 
 namespace JsonApi
 {
-    [JsonConverter(typeof(JsonApiErrorConverter))]
     public sealed class JsonApiError
     {
         [JsonPropertyName("id")]
         public string Id { get; set; }
 
         [JsonPropertyName("links")]
-        public JsonApiLink About { get; set; }
+        public JsonApiErrorLinks Links { get; set; }
 
         [JsonPropertyName("status")]
         public string Status { get; set; }

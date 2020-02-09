@@ -60,5 +60,27 @@ namespace JsonApi.Serialization
 
             return Activator.CreateInstance(propertyType, property, converter, Options) as JsonPropertyInfo;
         }
+
+        private Func<object> GetCreator(Type type)
+        {
+            if (type.IsCollection())
+            {
+                var elementType = type.GetCollectionType();
+
+                if (type.IsArray)
+                {
+                    return null;
+                }
+
+                var listType = typeof(List<>).MakeGenericType(elementType);
+
+                if (type.IsAssignableFrom(listType))
+                {
+                    return () => Activator.CreateInstance(listType);
+                }
+            }
+
+            return () => Activator.CreateInstance(type);
+        }
     }
 }

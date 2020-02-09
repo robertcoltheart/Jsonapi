@@ -34,9 +34,9 @@ namespace JsonApi
             {
                 var name = reader.GetString();
 
-                if (name == "data" || name == "errors" || name == "meta")
+                if (name != "data" && name != "errors" && name != "meta")
                 {
-                    return true;
+                    return false;
                 }
 
                 if (!reader.TrySkip())
@@ -50,7 +50,7 @@ namespace JsonApi
                 }
             }
 
-            return false;
+            return true;
         }
 
         public static T ReadObject<T>(this ref Utf8JsonReader reader, JsonSerializerOptions options)

@@ -17,7 +17,7 @@ namespace JsonApi.Converters
             }
             else if (reader.TokenType == JsonTokenType.StartObject)
             {
-
+                reader.Read();
             }
 
             return link;

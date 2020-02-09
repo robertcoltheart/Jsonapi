@@ -10,7 +10,7 @@ namespace JsonApi.Converters
         {
             if (typeToConvert.IsError())
             {
-                return true;
+                return false;
             }
 
             if (typeToConvert.IsCollection() && typeToConvert.GetCollectionType() == typeof(JsonApiError))
@@ -28,11 +28,6 @@ namespace JsonApi.Converters
 
         public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
         {
-            if (typeToConvert.IsError())
-            {
-                return new JsonApiErrorConverter();
-            }
-
             if (typeToConvert.IsCollection() && typeToConvert.GetCollectionType() == typeof(JsonApiError))
             {
                 return CreateConverter(typeof(JsonApiErrorsConverter<>), typeToConvert);

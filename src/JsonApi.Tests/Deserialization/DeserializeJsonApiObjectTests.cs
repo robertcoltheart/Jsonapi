@@ -4,68 +4,52 @@ using Xunit;
 
 namespace JsonApi.Tests.Deserialization
 {
-    public class DeserializeJsonApiObjectTests : JsonSerializerTests
+    public class DeserializeJsonApiObjectTests
     {
-        [Fact]
-        public void CanConvertJsonApiVersion()
-        {
-            const string json = @"
-                {
-                  'jsonapi': {
-                    'version': '1.0'
-                  }
-                }";
+        private const string Json = @"
+            {{
+              'jsonapi': {{
+                'version': '{0}'
+              }}
+            }}";
 
-            var document = Deserialize<Document>(json.ToDoubleQuoted());
+        [Theory]
+        [InlineData("1.0")]
+        [InlineData("1.1")]
+        [InlineData("1.1.1")]
+        [InlineData("2.0.1")]
+        public void CanConvertNewJsonApiVersions(string version)
+        {
+            var document = Json.Format(version).Deserialize<Document>();
 
             Assert.NotNull(document.JsonApi);
-            Assert.Equal(document.JsonApi.Version, Version.Parse("1.0"));
+            Assert.Equal(document.JsonApi.Version, Version.Parse(version));
         }
 
-        [Fact]
-        public void CanConvertNewJsonApiVersion()
+        [Theory]
+        [InlineData("1.b")]
+        [InlineData("1.0-beta.1")]
+        [InlineData("abcdef")]
+        [InlineData("1.#.0")]
+        public void InvalidVersionThrows(string version)
         {
-            const string json = @"
-                {
-                  'jsonapi': {
-                    'version': '1.1'
-                  }
-                }";
-
-            var document = Deserialize<Document>(json.ToDoubleQuoted());
-
-            Assert.NotNull(document.JsonApi);
-            Assert.Equal(document.JsonApi.Version, Version.Parse("1.1"));
-        }
-
-        [Fact]
-        public void InvalidVersionThrows()
-        {
-            const string json = @"
-                {
-                  'jsonapi': {
-                    'version': '1.b'
-                  }
-                }";
-
-            var exception = Record.Exception(() => Deserialize<Document>(json.ToDoubleQuoted()));
+            var exception = Record.Exception(() => Json.Format(version).Deserialize<Document>());
 
             Assert.IsType<JsonApiException>(exception);
+            Assert.Contains("invalid", exception.Message.ToLower());
         }
 
-        [Fact]
-        public void LessThanMinimumVersionThrows()
+        [Theory]
+        [InlineData("0.9")]
+        [InlineData("0.1")]
+        [InlineData("0.0.1")]
+        [InlineData("0.9.9")]
+        public void LessThanMinimumVersionThrows(string version)
         {
-            const string json = @"
-                {
-                  'jsonapi': {
-                    'version': '0.9'
-                  }
-                }";
-
-            var exception = Record.Exception(() => Deserialize<Document>(json.ToDoubleQuoted()));
+            var exception = Record.Exception(() => Json.Format(version).Deserialize<Document>());
 
             Assert.IsType<JsonApiException>(exception);
+            Assert.Contains("minimum required", exception.Message.ToLower());
         }
 
         private class Document

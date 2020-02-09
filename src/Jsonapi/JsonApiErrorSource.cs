@@ -1,9 +1,7 @@
 ﻿using System.Text.Json.Serialization;
-using JsonApi.Converters;
 
 namespace JsonApi
 {
-    [JsonConverter(typeof(JsonApiErrorSourceConverter))]
     public sealed class JsonApiErrorSource
     {
         [JsonPropertyName("pointer")]

@@ -28,6 +28,8 @@ namespace JsonApi.Converters
 
             while (reader.TokenType != JsonTokenType.EndArray)
             {
+                //var error = reader.ReadObject<JsonApiError>(options);
+
                 var error = JsonSerializer.Deserialize<JsonApiError>(ref reader, options);
 
                 list.Add(error);
@@ -35,7 +37,12 @@ namespace JsonApi.Converters
                 reader.Read();
             }
 
-            return (T) (object) list.ToArray();
+            if (typeToConvert.IsArray)
+            {
+                return (T) (object) list.ToArray();
+            }
+
+            return (T) (object) list;
         }
 
         public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
