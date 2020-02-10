@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -15,7 +14,38 @@ namespace JsonApi.Converters
                 throw new JsonApiException("Invalid JSON:API document");
             }
 
-            return null;
+            var documentInfo = options.GetClassInfo(typeToConvert);
+
+            var root = documentInfo.Creator() as JsonApiDocument;
+
+            reader.Read();
+
+            while (reader.TokenType != JsonTokenType.EndObject)
+            {
+                if (reader.TokenType != JsonTokenType.PropertyName)
+                {
+                    throw new JsonApiException($"Expected top-level JSON:API property name but found '{reader.GetString()}'");
+                }
+
+                var property = reader.GetString();
+
+                reader.Read();
+
+                if (documentInfo.Properties.TryGetValue(property, out var propertyInfo))
+                {
+                    var item = JsonSerializer.Deserialize(ref reader, propertyInfo.PropertyType, options);
+
+                    propertyInfo.SetValueAsObject(root, item);
+                }
+                else
+                {
+                    reader.Skip();
+                }
+
+                reader.Read();
+            }
+
+            return root;
         }
 
         public override void Write(Utf8JsonWriter writer, JsonApiDocument value, JsonSerializerOptions options)
@@ -33,8 +63,11 @@ namespace JsonApi.Converters
             }
 
             var dataType = typeToConvert.GetGenericArguments()[0];
+            var documentType = typeof(JsonApiDocument<>).MakeGenericType(dataType);
 
-            var root = Activator.CreateInstance(typeof(JsonApiDocument<>).MakeGenericType(dataType));
+            var documentInfo = options.GetClassInfo(documentType);
+
+            var root = documentInfo.Creator();
 
             reader.Read();
 
@@ -53,15 +86,13 @@ namespace JsonApi.Converters
                 {
                     var data = JsonSerializer.Deserialize(ref reader, dataType, options);
 
-                    var dataProperty = root.GetType().GetProperty("Data", BindingFlags.Instance | BindingFlags.Public);
-                    dataProperty?.SetValue(root, data);
+                    documentInfo.Properties[JsonApiMembers.Data].SetValueAsObject(root, data);
                 }
                 else if (property == JsonApiMembers.Errors)
                 {
                     var errors = JsonSerializer.Deserialize<JsonApiError[]>(ref reader, options);
 
-                    var errorsProperty = root.GetType().GetProperty("Errors", BindingFlags.Instance | BindingFlags.Public);
-                    errorsProperty?.SetValue(root, errors);
+                    documentInfo.Properties[JsonApiMembers.Errors].SetValueAsObject(root, errors);
                 }
                 else
                 {

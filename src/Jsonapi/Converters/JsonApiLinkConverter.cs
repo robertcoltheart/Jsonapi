@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -18,6 +19,28 @@ namespace JsonApi.Converters
             else if (reader.TokenType == JsonTokenType.StartObject)
             {
                 reader.Read();
+
+                while (reader.TokenType == JsonTokenType.PropertyName)
+                {
+                    var name = reader.GetString();
+
+                    reader.Read();
+
+                    if (name == "href")
+                    {
+                        link.Href = reader.GetString();
+                    }
+                    else if (name == "meta")
+                    {
+                        link.Meta = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(ref reader, options);
+                    }
+                    else
+                    {
+                        reader.Skip();
+                    }
+
+                    reader.Read();
+                }
             }
 
             return link;

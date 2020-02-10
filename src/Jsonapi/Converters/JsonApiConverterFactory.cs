@@ -35,7 +35,9 @@ namespace JsonApi.Converters
 
             if (typeToConvert.IsDocument())
             {
-                return CreateConverter(typeof(JsonApiDocumentConverter<>), typeToConvert);
+                return typeToConvert == typeof(JsonApiDocument)
+                    ? new JsonApiDocumentConverter()
+                    : CreateConverter(typeof(JsonApiDocumentConverter<>), typeToConvert);
             }
 
             return CreateConverter(typeof(JsonApiResourceConverter<>), typeToConvert);

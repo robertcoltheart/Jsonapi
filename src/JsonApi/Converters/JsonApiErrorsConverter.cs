@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using JsonApi.Serialization;
 
 namespace JsonApi.Converters
 {
@@ -10,11 +11,13 @@ namespace JsonApi.Converters
     {
         public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            var type = options.GetClassInfo(typeToConvert);
+
             if (reader.IsDocument())
             {
-                var document = JsonSerializer.Deserialize<JsonApiDocument<T>>(ref reader, options);
+                var document = JsonSerializer.Deserialize<JsonApiDocument>(ref reader, options);
 
-                return (T) (object) document.Errors;
+                return (T) GetInstance(type, document.Errors);
             }
 
             if (reader.TokenType != JsonTokenType.StartArray)
@@ -28,8 +31,6 @@ namespace JsonApi.Converters
 
             while (reader.TokenType != JsonTokenType.EndArray)
             {
-                //var error = reader.ReadObject<JsonApiError>(options);
-
                 var error = JsonSerializer.Deserialize<JsonApiError>(ref reader, options);
 
                 list.Add(error);
@@ -37,12 +38,7 @@ namespace JsonApi.Converters
                 reader.Read();
             }
 
-            if (typeToConvert.IsArray)
-            {
-                return (T) (object) list.ToArray();
-            }
-
-            return (T) (object) list;
+            return (T) GetInstance(type, list.ToArray());
         }
 
         public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
@@ -57,6 +53,28 @@ namespace JsonApi.Converters
             }
 
             writer.WriteEndArray();
+        }
+
+        private object GetInstance(JsonClassInfo info, JsonApiError[] errors)
+        {
+            if (info.ClassType == JsonClassType.Array)
+            {
+                return errors;
+            }
+
+            if (info.ClassType == JsonClassType.List)
+            {
+                var list = info.Creator() as IList<JsonApiError>;
+
+                foreach (var error in errors)
+                {
+                    list.Add(error);
+                }
+
+                return list;
+            }
+
+            return errors;
         }
     }
 }
