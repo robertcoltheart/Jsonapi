@@ -18,7 +18,7 @@ namespace JsonApi
 
         public static bool IsDocument(this Type type)
         {
-            return type == typeof(JsonApiDocument) ||
+            return //type == typeof(JsonApiDocument) ||
                    type.IsGenericType && type.GetGenericTypeDefinition() == typeof(JsonApiDocument<>);
         }
 

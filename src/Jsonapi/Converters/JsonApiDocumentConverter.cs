@@ -5,53 +5,53 @@ using System.Text.Json.Serialization;
 
 namespace JsonApi.Converters
 {
-    internal class JsonApiDocumentConverter : JsonConverter<JsonApiDocument>
-    {
-        public override JsonApiDocument Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            if (reader.TokenType != JsonTokenType.StartObject)
-            {
-                throw new JsonApiException("Invalid JSON:API document");
-            }
+    //internal class JsonApiDocumentConverter : JsonConverter<JsonApiDocument>
+    //{
+    //    public override JsonApiDocument Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    //    {
+    //        if (reader.TokenType != JsonTokenType.StartObject)
+    //        {
+    //            throw new JsonApiException("Invalid JSON:API document");
+    //        }
 
-            var documentInfo = options.GetClassInfo(typeToConvert);
+    //        var documentInfo = options.GetClassInfo(typeToConvert);
 
-            var root = documentInfo.Creator() as JsonApiDocument;
+    //        var root = documentInfo.Creator() as JsonApiDocument;
 
-            reader.Read();
+    //        reader.Read();
 
-            while (reader.TokenType != JsonTokenType.EndObject)
-            {
-                if (reader.TokenType != JsonTokenType.PropertyName)
-                {
-                    throw new JsonApiException($"Expected top-level JSON:API property name but found '{reader.GetString()}'");
-                }
+    //        while (reader.TokenType != JsonTokenType.EndObject)
+    //        {
+    //            if (reader.TokenType != JsonTokenType.PropertyName)
+    //            {
+    //                throw new JsonApiException($"Expected top-level JSON:API property name but found '{reader.GetString()}'");
+    //            }
 
-                var property = reader.GetString();
+    //            var property = reader.GetString();
 
-                reader.Read();
+    //            reader.Read();
 
-                if (documentInfo.Properties.TryGetValue(property, out var propertyInfo))
-                {
-                    var item = JsonSerializer.Deserialize(ref reader, propertyInfo.PropertyType, options);
+    //            if (documentInfo.Properties.TryGetValue(property, out var propertyInfo))
+    //            {
+    //                var item = JsonSerializer.Deserialize(ref reader, propertyInfo.PropertyType, options);
 
-                    propertyInfo.SetValueAsObject(root, item);
-                }
-                else
-                {
-                    reader.Skip();
-                }
+    //                propertyInfo.SetValueAsObject(root, item);
+    //            }
+    //            else
+    //            {
+    //                reader.Skip();
+    //            }
 
-                reader.Read();
-            }
+    //            reader.Read();
+    //        }
 
-            return root;
-        }
+    //        return root;
+    //    }
 
-        public override void Write(Utf8JsonWriter writer, JsonApiDocument value, JsonSerializerOptions options)
-        {
-        }
-    }
+    //    public override void Write(Utf8JsonWriter writer, JsonApiDocument value, JsonSerializerOptions options)
+    //    {
+    //    }
+    //}
 
     internal class JsonApiDocumentConverter<T> : JsonConverter<T>
     {

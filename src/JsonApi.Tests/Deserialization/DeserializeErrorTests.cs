@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Xunit;
 
 namespace JsonApi.Tests.Deserialization
 {
     public class DeserializeErrorTests
     {
-        const string SingleErrorJson = @"
+        private const string SingleErrorJson = @"
             {
               'errors': [
                 {
@@ -20,7 +21,7 @@ namespace JsonApi.Tests.Deserialization
               ]
             }";
 
-        const string MultipleErrorsJson = @"
+        private const string MultipleErrorsJson = @"
             {
               'errors': [
                 {
@@ -82,7 +83,7 @@ namespace JsonApi.Tests.Deserialization
               ]
             }";
 
-        const string MetaOnlyError = @"
+        private const string MetaOnlyError = @"
             {
               'errors': [
                 {
@@ -97,7 +98,7 @@ namespace JsonApi.Tests.Deserialization
               ]
             }";
 
-        const string ErrorWithDocumentMeta = @"
+        private const string ErrorWithDocumentMeta = @"
             {
               'meta': {
                 'name': 'Dave',
@@ -115,6 +116,37 @@ namespace JsonApi.Tests.Deserialization
                       'Bob Jane',
                       'James Bond'
                     ]
+                  }
+                }
+              ]
+            }";
+
+        private const string NoErrorsDocument = @"
+            {
+              'data': {
+                'type': 'articles',
+                'id': '1',
+                'attributes': {
+                  'title': 'json'
+                }
+              }
+            }";
+
+        private const string NoErrorsMultipleResourcesDocument = @"
+            {
+              'data': [
+                {
+                  'type': 'articles',
+                  'id': '1',
+                  'attributes': {
+                    'title': 'json'
+                  }
+                },
+                {
+                  'type': 'articles',
+                  'id': '2',
+                  'attributes': {
+                    'title': 'api'
                   }
                 }
               ]
@@ -163,13 +195,10 @@ namespace JsonApi.Tests.Deserialization
 
         [Theory]
         [InlineData(typeof(List<JsonApiError>))]
-        [InlineData(typeof(Collection<JsonApiError>))]
         [InlineData(typeof(JsonApiError[]))]
-        [InlineData(typeof(DerivedList<JsonApiError>))]
         [InlineData(typeof(IList<JsonApiError>))]
         [InlineData(typeof(ICollection<JsonApiError>))]
         [InlineData(typeof(IEnumerable<JsonApiError>))]
-        [InlineData(typeof(ObservableCollection<JsonApiError>))]
         public void CanConvertMultipleErrorsAsCollections(Type type)
         {
             var collection = MultipleErrorsJson.Deserialize(type);
@@ -178,8 +207,20 @@ namespace JsonApi.Tests.Deserialization
             Assert.Equal(3, enumerable?.Count());
         }
 
-        private class DerivedList<T> : List<T>
+        [Fact]
+        public void SingleResourceDocumentWithNoErrorsReturnsNull()
         {
+            var errors = NoErrorsDocument.Deserialize<JsonApiError[]>();
+
+            Assert.Null(errors);
+        }
+
+        [Fact]
+        public void MultipleResourceDocumentWithNoErrorsReturnsNull()
+        {
+            var errors = NoErrorsMultipleResourcesDocument.Deserialize<JsonApiError[]>();
+
+            Assert.Null(errors);
         }
     }
 }

@@ -19,7 +19,7 @@ namespace JsonApi
     public class JsonApiResource : JsonApiResourceIdentifier
     {
         [JsonPropertyName("attributes")]
-        public JsonElement Attributes { get; set; }
+        public Dictionary<string, JsonElement> Attributes { get; set; }
 
         [JsonPropertyName("relationships")]
         public Dictionary<string, JsonApiRelationship> Relationships { get; set; }

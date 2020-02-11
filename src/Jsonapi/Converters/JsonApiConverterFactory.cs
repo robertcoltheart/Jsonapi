@@ -23,6 +23,11 @@ namespace JsonApi.Converters
                 return true;
             }
 
+            if (typeToConvert == typeof(JsonApiResource) || typeToConvert == typeof(JsonApiResourceIdentifier))
+            {
+                return false;
+            }
+
             return typeToConvert.IsResource();
         }
 
@@ -35,9 +40,9 @@ namespace JsonApi.Converters
 
             if (typeToConvert.IsDocument())
             {
-                return typeToConvert == typeof(JsonApiDocument)
+                return /*typeToConvert == typeof(JsonApiDocument)
                     ? new JsonApiDocumentConverter()
-                    : CreateConverter(typeof(JsonApiDocumentConverter<>), typeToConvert);
+                    :*/ CreateConverter(typeof(JsonApiDocumentConverter<>), typeToConvert);
             }
 
             return CreateConverter(typeof(JsonApiResourceConverter<>), typeToConvert);
