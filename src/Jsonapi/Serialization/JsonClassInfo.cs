@@ -59,9 +59,43 @@ namespace JsonApi.Serialization
         private JsonPropertyInfo CreateProperty(PropertyInfo property)
         {
             var propertyType = typeof(ReflectionJsonPropertyInfo<,>).MakeGenericType(property.DeclaringType, property.PropertyType);
-            var converter = Options.GetConverter(property.PropertyType);
+            var converter = GetConverter(property);
 
             return Activator.CreateInstance(propertyType, property, converter, Options) as JsonPropertyInfo;
+        }
+
+        private JsonConverter GetConverter(PropertyInfo property)
+        {
+            var converter = GetConverterAttribute(property);
+
+            if (converter == null)
+            {
+                return Options.GetConverter(property.PropertyType);
+            }
+
+            if (converter.ConverterType == null)
+            {
+                return converter.CreateConverter(property.PropertyType);
+            }
+
+            return Activator.CreateInstance(converter.ConverterType) as JsonConverter;
+        }
+
+        private JsonConverterAttribute GetConverterAttribute(PropertyInfo property)
+        {
+            var converters = property.GetCustomAttributes<JsonConverterAttribute>(false).ToArray();
+
+            if (!converters.Any())
+            {
+                return null;
+            }
+
+            if (converters.Length > 1)
+            {
+                throw new InvalidOperationException($"The attribute 'JsonConverterAttribute' cannot exist more than once on '{property}'.");
+            }
+
+            return converters.First();
         }
 
         private Func<object> GetCreator(Type type)

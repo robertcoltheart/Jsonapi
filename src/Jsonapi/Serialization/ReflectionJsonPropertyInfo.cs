@@ -23,6 +23,8 @@ namespace JsonApi.Serialization
 
         public Action<object, TProperty> Set { get; }
 
+        public override bool HasConverter => Converter != null;
+
         public override bool HasGetter { get; }
 
         public override bool HasSetter { get; }

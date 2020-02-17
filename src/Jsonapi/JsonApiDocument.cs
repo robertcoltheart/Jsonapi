@@ -14,6 +14,7 @@ namespace JsonApi
         public JsonApiError[] Errors { get; set; }
     }
 
+    [JsonConverter(typeof(JsonApiDocumentConverter<JsonApiDocument>))]
     public class JsonApiDocument
     {
         [JsonPropertyName("data")]

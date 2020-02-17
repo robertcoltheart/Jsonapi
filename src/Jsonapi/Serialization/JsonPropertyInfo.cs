@@ -22,6 +22,8 @@ namespace JsonApi.Serialization
 
         public JsonSerializerOptions Options { get; }
 
+        public abstract bool HasConverter { get; }
+
         public abstract bool HasGetter { get; }
 
         public abstract bool HasSetter { get; }

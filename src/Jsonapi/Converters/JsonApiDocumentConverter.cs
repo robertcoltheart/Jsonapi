@@ -1,58 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace JsonApi.Converters
 {
-    //internal class JsonApiDocumentConverter : JsonConverter<JsonApiDocument>
-    //{
-    //    public override JsonApiDocument Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    //    {
-    //        if (reader.TokenType != JsonTokenType.StartObject)
-    //        {
-    //            throw new JsonApiException("Invalid JSON:API document");
-    //        }
-
-    //        var documentInfo = options.GetClassInfo(typeToConvert);
-
-    //        var root = documentInfo.Creator() as JsonApiDocument;
-
-    //        reader.Read();
-
-    //        while (reader.TokenType != JsonTokenType.EndObject)
-    //        {
-    //            if (reader.TokenType != JsonTokenType.PropertyName)
-    //            {
-    //                throw new JsonApiException($"Expected top-level JSON:API property name but found '{reader.GetString()}'");
-    //            }
-
-    //            var property = reader.GetString();
-
-    //            reader.Read();
-
-    //            if (documentInfo.Properties.TryGetValue(property, out var propertyInfo))
-    //            {
-    //                var item = JsonSerializer.Deserialize(ref reader, propertyInfo.PropertyType, options);
-
-    //                propertyInfo.SetValueAsObject(root, item);
-    //            }
-    //            else
-    //            {
-    //                reader.Skip();
-    //            }
-
-    //            reader.Read();
-    //        }
-
-    //        return root;
-    //    }
-
-    //    public override void Write(Utf8JsonWriter writer, JsonApiDocument value, JsonSerializerOptions options)
-    //    {
-    //    }
-    //}
-
     internal class JsonApiDocumentConverter<T> : JsonConverter<T>
     {
         public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -62,14 +13,13 @@ namespace JsonApi.Converters
                 throw new JsonApiException("Invalid JSON:API document");
             }
 
-            var dataType = typeToConvert.GetGenericArguments()[0];
-            var documentType = typeof(JsonApiDocument<>).MakeGenericType(dataType);
-
-            var documentInfo = options.GetClassInfo(documentType);
+            var documentInfo = options.GetClassInfo(typeToConvert);
 
             var root = documentInfo.Creator();
 
             reader.Read();
+
+            var flags = DocumentFlags.None;
 
             while (reader.TokenType != JsonTokenType.EndObject)
             {
@@ -80,61 +30,88 @@ namespace JsonApi.Converters
 
                 var property = reader.GetString();
 
+                AddFlag(ref flags, property);
+
                 reader.Read();
 
-                if (property == JsonApiMembers.Data)
+                if (documentInfo.Properties.TryGetValue(property, out var propertyInfo))
                 {
-                    var data = JsonSerializer.Deserialize(ref reader, dataType, options);
+                    if (propertyInfo.HasConverter)
+                    {
+                        propertyInfo.Read(root, ref reader);
+                    }
+                    else
+                    {
+                        var item = JsonSerializer.Deserialize(ref reader, propertyInfo.PropertyType, options);
 
-                    documentInfo.Properties[JsonApiMembers.Data].SetValueAsObject(root, data);
-                }
-                else if (property == JsonApiMembers.Errors)
-                {
-                    var errors = JsonSerializer.Deserialize<JsonApiError[]>(ref reader, options);
-
-                    documentInfo.Properties[JsonApiMembers.Errors].SetValueAsObject(root, errors);
+                        propertyInfo.SetValueAsObject(root, item);
+                    }
                 }
                 else
                 {
-                    ReadDocumentMember(ref reader, property, typeToConvert, options);
+                    reader.Skip();
                 }
 
                 reader.Read();
             }
+
+            ValidateFlags(flags);
 
             return (T) root;
         }
 
-        private void ReadDocumentMember(ref Utf8JsonReader reader, string property, Type typeToConvert, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
         {
-            if (property == JsonApiMembers.Data)
+        }
+
+        private void ValidateFlags(DocumentFlags flags)
+        {
+            if (!flags.HasFlag(DocumentFlags.Data) &&
+                !flags.HasFlag(DocumentFlags.Errors) &&
+                !flags.HasFlag(DocumentFlags.Meta))
             {
-                //resourceConverter.Read(ref reader, typeToConvert, options);
+                throw new JsonApiException("JSON:API document must contain 'data', 'errors' or 'meta' members");
             }
-            else if (property == JsonApiMembers.Errors)
+
+            if (flags.HasFlag(DocumentFlags.Data) && flags.HasFlag(DocumentFlags.Errors))
             {
-                JsonSerializer.Deserialize<JsonApiError[]>(ref reader, options);
+                throw new JsonApiException("JSON:API document must not contain both 'data' and 'errors' members");
             }
-            else if (property == JsonApiMembers.Meta)
+
+            if (flags.HasFlag(DocumentFlags.Included) && !flags.HasFlag(DocumentFlags.Data))
             {
-                JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(ref reader, options);
-            }
-            else if (property == JsonApiMembers.Version)
-            {
-                JsonSerializer.Deserialize<JsonApiObject>(ref reader, options);
-            }
-            else if (property == JsonApiMembers.Links)
-            {
-                JsonSerializer.Deserialize<JsonApiLinks>(ref reader, options);
-            }
-            else if (property == JsonApiMembers.Included)
-            {
-                JsonSerializer.Deserialize<JsonApiResource[]>(ref reader, options);
+                throw new JsonApiException("JSON:API document must contain 'data' member if 'included' member is specified");
             }
         }
 
-        public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
+        private void AddFlag(ref DocumentFlags flags, string name)
         {
+            switch (name)
+            {
+                case JsonApiMembers.Data:
+                    flags |= DocumentFlags.Data;
+                    break;
+
+                case JsonApiMembers.Errors:
+                    flags |= DocumentFlags.Errors;
+                    break;
+
+                case JsonApiMembers.Meta:
+                    flags |= DocumentFlags.Meta;
+                    break;
+
+                case JsonApiMembers.Version:
+                    flags |= DocumentFlags.Jsonapi;
+                    break;
+
+                case JsonApiMembers.Links:
+                    flags |= DocumentFlags.Links;
+                    break;
+
+                case JsonApiMembers.Included:
+                    flags |= DocumentFlags.Included;
+                    break;
+            }
         }
     }
 }
