@@ -36,7 +36,29 @@ namespace JsonApi.Converters
 
                 if (documentInfo.Properties.TryGetValue(property, out var propertyInfo))
                 {
-                    if (propertyInfo.HasConverter)
+                    if (property == JsonApiMembers.Data)
+                    {
+                        var dataResourceType = typeof(JsonApiResource<>).MakeGenericType(propertyInfo.PropertyType);
+                        var dataResourceInfo = options.GetClassInfo(dataResourceType);
+                        var dataInfo = options.GetClassInfo(propertyInfo.PropertyType);
+
+                        var dataIdentifier = (JsonApiResourceIdentifier) JsonSerializer.Deserialize(ref reader, dataResourceType, options);
+
+                        var data = dataResourceInfo.Properties["attributes"].GetValueAsObject(dataIdentifier);
+
+                        if (dataInfo.Properties.TryGetValue("id", out var id))
+                        {
+                            id.SetValueAsObject(data, dataIdentifier.Id);
+                        }
+
+                        if (dataInfo.Properties.TryGetValue("type", out var type))
+                        {
+                            type.SetValueAsObject(data, dataIdentifier.Type);
+                        }
+
+                        propertyInfo.SetValueAsObject(root, data);
+                    }
+                    else if (propertyInfo.HasConverter)
                     {
                         propertyInfo.Read(root, ref reader);
                     }

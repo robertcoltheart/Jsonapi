@@ -8,44 +8,12 @@ namespace JsonApi.Converters
     {
         public override bool CanConvert(Type typeToConvert)
         {
-            if (typeToConvert.IsError())
-            {
-                return false;
-            }
-
-            if (typeToConvert.IsCollection() && typeToConvert.GetCollectionType() == typeof(JsonApiError))
-            {
-                return true;
-            }
-
-            if (typeToConvert.IsDocument())
-            {
-                return true;
-            }
-
-            if (typeToConvert == typeof(JsonApiResource) || typeToConvert == typeof(JsonApiResourceIdentifier))
-            {
-                return false;
-            }
-
-            return typeToConvert.IsResource();
+            return typeToConvert.IsDocument();
         }
 
         public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
         {
-            if (typeToConvert.IsCollection() && typeToConvert.GetCollectionType() == typeof(JsonApiError))
-            {
-                return CreateConverter(typeof(JsonApiErrorsConverter<>), typeToConvert);
-            }
-
-            if (typeToConvert.IsDocument())
-            {
-                return /*typeToConvert == typeof(JsonApiDocument)
-                    ? new JsonApiDocumentConverter()
-                    :*/ CreateConverter(typeof(JsonApiDocumentConverter<>), typeToConvert);
-            }
-
-            return CreateConverter(typeof(JsonApiResourceConverter<>), typeToConvert);
+            return CreateConverter(typeof(JsonApiDocumentConverter<>), typeToConvert);
         }
 
         private JsonConverter CreateConverter(Type converterType, Type typeToConvert)
