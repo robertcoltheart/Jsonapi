@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text.Json.Serialization;
 using Xunit;
 
 namespace JsonApi.Tests.Deserialization
@@ -20,10 +19,10 @@ namespace JsonApi.Tests.Deserialization
         [InlineData("2.0.1")]
         public void CanConvertNewJsonApiVersions(string version)
         {
-            var document = Json.Format(version).Deserialize<Document>();
+            var document = Json.Format(version).Deserialize<JsonApiDocument>();
 
-            Assert.NotNull(document.JsonApi);
-            Assert.Equal(document.JsonApi.Version, Version.Parse(version));
+            Assert.NotNull(document.Object);
+            Assert.Equal(document.Object.Version, Version.Parse(version));
         }
 
         [Theory]
@@ -33,7 +32,7 @@ namespace JsonApi.Tests.Deserialization
         [InlineData("1.#.0")]
         public void InvalidVersionThrows(string version)
         {
-            var exception = Record.Exception(() => Json.Format(version).Deserialize<Document>());
+            var exception = Record.Exception(() => Json.Format(version).Deserialize<JsonApiDocument>());
 
             Assert.IsType<JsonApiException>(exception);
             Assert.Contains("invalid", exception.Message.ToLower());
@@ -46,16 +45,10 @@ namespace JsonApi.Tests.Deserialization
         [InlineData("0.9.9")]
         public void LessThanMinimumVersionThrows(string version)
         {
-            var exception = Record.Exception(() => Json.Format(version).Deserialize<Document>());
+            var exception = Record.Exception(() => Json.Format(version).Deserialize<JsonApiDocument>());
 
             Assert.IsType<JsonApiException>(exception);
             Assert.Contains("minimum required", exception.Message.ToLower());
-        }
-
-        private class Document
-        {
-            [JsonPropertyName("jsonapi")]
-            public JsonApiObject JsonApi { get; set; }
         }
     }
 }

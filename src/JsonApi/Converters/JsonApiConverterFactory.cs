@@ -8,12 +8,22 @@ namespace JsonApi.Converters
     {
         public override bool CanConvert(Type typeToConvert)
         {
-            throw new NotImplementedException();
+            if (typeToConvert == typeof(JsonApiDocument))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
         {
-            throw new NotImplementedException();
+            if (typeToConvert == typeof(JsonApiDocument))
+            {
+                return new JsonApiDocumentConverter();
+            }
+
+            return default;
         }
     }
 }

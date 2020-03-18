@@ -22,7 +22,7 @@ namespace JsonApi.Tests.Deserialization
                   ]
                 }";
 
-            var errors = json.Deserialize<JsonApiError[]>();
+            var errors = json.Deserialize<JsonApiDocument>().Errors;
 
             Assert.Single(errors);
             Assert.Equal("422", errors.First().Status);
@@ -50,7 +50,7 @@ namespace JsonApi.Tests.Deserialization
                   ]
                 }";
 
-            var errors = json.Deserialize<JsonApiError[]>();
+            var errors = json.Deserialize<JsonApiDocument>().Errors;
 
             Assert.NotEmpty(errors);
             Assert.NotEmpty(errors.First().Meta);
@@ -82,14 +82,14 @@ namespace JsonApi.Tests.Deserialization
                   ]
                 }";
 
-            var errors = json.Deserialize<JsonApiError[]>();
+            var errors = json.Deserialize<JsonApiDocument>().Errors;
 
             Assert.NotEmpty(errors);
             Assert.NotEmpty(errors.First().Meta);
             Assert.Equal("No permission", errors.First().Title);
         }
 
-        [Theory]
+        [Theory(Skip = "We're only going to support JsonApiDocument")]
         [InlineData(typeof(List<JsonApiError>))]
         [InlineData(typeof(JsonApiError[]))]
         [InlineData(typeof(IList<JsonApiError>))]
@@ -180,7 +180,7 @@ namespace JsonApi.Tests.Deserialization
               }
             }";
 
-            var errors = json.Deserialize<JsonApiError[]>();
+            var errors = json.Deserialize<JsonApiDocument>().Errors;
 
             Assert.Null(errors);
         }
@@ -208,7 +208,7 @@ namespace JsonApi.Tests.Deserialization
               ]
             }";
 
-            var errors = json.Deserialize<JsonApiError[]>();
+            var errors = json.Deserialize<JsonApiDocument>().Errors;
 
             Assert.Null(errors);
         }
@@ -235,7 +235,7 @@ namespace JsonApi.Tests.Deserialization
                   }
                 }";
 
-            var exception = Record.Exception(() => json.Deserialize<JsonApiError[]>());
+            var exception = Record.Exception(() => json.Deserialize<JsonApiDocument>());
 
             Assert.IsType<JsonApiException>(exception);
             Assert.Contains("must not contain both 'data' and 'errors'", exception.Message);

@@ -28,7 +28,7 @@ namespace JsonApi.Tests
             var converter = new ResourceConverter();
             options.Converters.Add(converter);
 
-            Json.Deserialize<Article>(options);
+            Json.Deserialize<JsonApiDocument<Article>>(options);
 
             Assert.False(converter.ReadCalled);
         }
@@ -42,7 +42,7 @@ namespace JsonApi.Tests
             var converter = new ResourceConverter();
             options.Converters.Insert(0, converter);
 
-            Json.Deserialize<Article>(options);
+            Json.Deserialize<JsonApiDocument<Article>>(options);
 
             Assert.True(converter.ReadCalled);
         }
